@@ -1,0 +1,26 @@
+{
+  "name": "achart-legend",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "homepage": "",
+  "author": "dxq613@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "licenses": "MIT",
+  "spm": {
+    "main": "index.js",
+    "dependencies": {
+      "achart-util" : "1.0.0",
+      "achart-plot" : "1.0.0"
+    },
+    "devDependencies": {
+      "expect.js": "0.3.1"
+    }
+  }
+}
