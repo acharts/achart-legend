@@ -1,16 +1,16 @@
 {
   "name": "achart-legend",
   "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "homepage": "",
+  "description": "legend for acharts",
+  "keywords": ["acharts"],
+  "homepage": "https://github.com/acharts/achart-legend",
   "author": "dxq613@gmail.com",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/acharts/achart-legend.git"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/acharts/achart-legend/issues"
   },
   "licenses": "MIT",
   "spm": {
