@@ -81,8 +81,6 @@ LegendItem.ATTRS = {
 		width : 15,
 		height : 10
 	}
-
-	
 }
 
 Util.extend(LegendItem,PlotItem);
