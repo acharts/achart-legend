@@ -183,7 +183,7 @@ Util.augment(LegendItem,{
 					stroke : color
 				},_self.get(type)),
 			shape;
-		if(cfg){
+		if(cfg && type){
 			shape = _self.addShape(type,cfg);
 		}
 		shape && shape.attr('cursor','pointer');
@@ -195,7 +195,7 @@ Util.augment(LegendItem,{
 			marker;
 
 		if(symbol){
-			marker = {symbol : symbol,fill : _self.get('color')};
+			marker = {symbol : symbol,fill : _self.get('color'),"stroke" : _self.get('color')};
 			marker.radius = 3;
 			marker.x = 10;
 			marker.y = 7;
