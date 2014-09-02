@@ -9,13 +9,6 @@ var Util = require('achart-util'),
   LINE_HEIGHT = 15,
   PADDING = 5;
 
-function min(x,y){
-  return x > y ? y : x;
-}
-function max(x,y){
-  return x > y ? x : y;
-}
-
 /**
  * @class Chart.Legend
  * 图例
@@ -99,12 +92,19 @@ Util.augment(Legend,{
       itemsGroup = _self.addGroup();
 
     _self.set('itemsGroup',itemsGroup);
+    _self._setItems(items);
+   
+  },
+  //设置子项
+  _setItems : function(items){
+    var _self = this;
 
     Util.each(items,function(item,index){
       _self._addItem(item,index);
     });
     if(items && items.length){
       _self.resetPosition();
+      _self.resetBorder();
     }
   },
   /**
@@ -118,6 +118,19 @@ Util.augment(Legend,{
     _self._addItem(item,items.length);
     _self.resetBorder();
     _self.resetPosition();
+  },
+  /**
+   * 设置选项
+   * @param {Array} items 选项集合
+   */
+  setItems : function(items){
+    var _self = this,
+      itemsGroup = _self.get('itemsGroup');
+    itemsGroup.clear();
+
+    _self.set('items',items);
+    _self._setItems(items);
+
   },
   //添加图例
   _addItem : function(item,index){

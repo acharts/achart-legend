@@ -107,9 +107,18 @@ Util.augment(LegendItem,{
   		item = _self.get('item');
 
   	_self.on('mouseover',function(ev){
-  		item.setActived && item.setActived();
+      if(item.setActived){
+        item.setActived();
+      }else{
+        item.set('actived',true);
+      }
+      
   	}).on('mouseout',function(ev){
-  		item.clearActived && item.clearActived();
+  		if(item.clearActived){
+        item.clearActived();
+      }else{
+        item.set('actived',false);
+      }
   	});
   },
   //点击事件

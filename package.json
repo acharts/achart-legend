@@ -20,7 +20,9 @@
       "achart-plot" : "1.0.0"
     },
     "devDependencies": {
-      "expect.js": "0.3.1"
+      "expect.js": "0.3.1",
+      "sinon" : "1.6.0",
+      "event-simulate" : "1.0.0"
     }
   }
 }
