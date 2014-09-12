@@ -9,10 +9,10 @@ var Util = require('achart-util'),
 	MARKER_WIDTH = 20;
 
 /**
- * @class Chart.LegendItem
+ * @class Chart.Legend.Item
  * 图例的子项，用于标示其中一个数据序列
  * @extends Chart.PlotItem
- * @mixins Chart.ActivedGroup
+ * @mixins Chart.Actived
  */
 var LegendItem = function(cfg){
 	LegendItem.superclass.constructor.call(this,cfg);
@@ -31,16 +31,17 @@ LegendItem.ATTRS = {
 		y : 7,
 		cursor : 'pointer',
 	},
+  /**
+   * checked 状态
+   * @type {Boolean}
+   */
+  checked : true,
 	/**
 	 * 所属的图例
 	 * @type {Object}
 	 */
 	legend : null,
-	/**
-	 * 标示的图表元素
-	 * @type {Chart.Canvas.Group}
-	 */
-	item : null,
+	
 	/**
 	 * x轴的位置
 	 * @type {Number}
@@ -52,16 +53,41 @@ LegendItem.ATTRS = {
 	 */
 	y : null,
 
+  /**
+   * 显示的文本
+   * @type {String}
+   */
 	name : null,
 
+  /**
+   * 颜色
+   * @type {String}
+   */
 	color : null,
 
+  /**
+   * marker的类型，默认为null
+   * @type {String}
+   */
 	symbol : null,
 
+  /**
+   * 显示的图形代表图形元素，默认 rect
+   * @type {String}
+   */
 	type : 'rect',
 	
-	hideColor : '#CCC',
+  /**
+   * 图形元素隐藏时的颜色
+   * @type {String}
+   */
+	uncheckedColor : '#CCC',
 
+  /**
+   * 图形是线的配置项
+   * @protected
+   * @type {Object}
+   */
 	line : {
 		x1 : 3,
 		y1 : 7,
@@ -69,12 +95,22 @@ LegendItem.ATTRS = {
 		y2 : 7,
 		"stroke-width" : 2
 	},
+  /**
+   * 图形是圆时的配置项
+   * @protected
+   * @type {Object}
+   */
 	circle : {
 		cx : 10,
 		cy : 7,
 		r : 5,
 		'fill-opacity' : .5
 	},
+  /**
+   * 图形是矩形的配置项
+   * @protected
+   * @type {Object}
+   */
 	rect : {
 		x : 2,
 		y : 2,
@@ -98,60 +134,15 @@ Util.augment(LegendItem,{
   	var _self = this;
   		
   	LegendItem.superclass.bindUI.call(_self);
-  	_self.bindMouseEvent();
-  	_self.bindClick();
   },
-  //鼠标事件
-  bindMouseEvent : function(){
-  	var _self = this,
-  		item = _self.get('item');
-
-  	_self.on('mouseover',function(ev){
-      if(item.setActived){
-        item.setActived();
-      }else{
-        item.set('actived',true);
-      }
-      
-  	}).on('mouseout',function(ev){
-  		if(item.clearActived){
-        item.clearActived();
-      }else{
-        item.set('actived',false);
-      }
-  	});
-  },
-  //点击事件
-  bindClick : function(){
-  	var _self = this,
-  		item = _self.get('item');
-
-  	_self.on('click',function(){
-  		var visible = item.get('visible');
-  		if(visible){ //防止最后一个隐藏
-  			var itemParent = item.get('parent'),
-  				children = itemParent.getVisibleChildren ? itemParent.getVisibleChildren() : itemParent.get('children'),
-  				count = children.length;
-  			if(count == 1){
-  				return;
-  			}
-  		}
-  		_self._setVisible(!visible);
-  	});
-  },
+  
   //设置是否可见
-	_setVisible : function(visible){
+	_setChecked : function(checked){
 		var _self = this,
-			item = _self.get('item'),
 			shape = _self.get('shape'),
 			marker = _self.get('marker'),
-			color = visible ? _self.get('color') : _self.get('hideColor'),
-			itemParent = item.get('parent');
-		if(visible){
-			itemParent.showChild && itemParent.showChild(item);
-		}else{
-			itemParent.hideChild && itemParent.hideChild(item);
-		}
+			color = checked ? _self.get('color') : _self.get('uncheckedColor');
+
 		shape && shape.attr({
 			stroke : color,
 			fill : color
@@ -161,6 +152,13 @@ Util.augment(LegendItem,{
 			fill : color
 		});
 	},
+  //checked发生改变时
+  _onRenderChecked : function(checked){
+    var _self = this;
+    if(_self.get('rendered')){
+      _self._setChecked(checked);
+    }
+  },
 	/**
 	 * 获取legend item的宽度
 	 * @return {Number} 宽度

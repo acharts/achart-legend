@@ -4,6 +4,7 @@ var Legend = require('../index'),
   Canvas = require('achart-canvas'),
   PlotRange = require('achart-plot').Range,
   PlotItem = require('achart-plot').Item,
+  Actived = require('achart-actived'),
   Simulate = require('event-simulate'),
   Util = require('achart-util');
 
@@ -16,49 +17,30 @@ var canvas = new Canvas({
   height : 500
 });
 
-var items = [],
+var 
   types = ['circle','line','rect','circle','line'],
   symbols = ['circle','diamond','square','triangle','triangle-down'],
   colors = [ '#ff6600','#b01111','#ac5724','#572d8a','#333333','#7bab12','#c25e5e','#a6c96a','#133960','#2586e7'];
 
-  var AItem = function(cfg){
-    AItem.superclass.constructor.call(this,cfg);
-  };
-  Util.extend(AItem,PlotItem);
-
-  var group = canvas.addGroup(AItem);
-
+ 
+  var range = new PlotRange({y : 460,x : 40},{x : 460,y : 40});
+describe('legend',function(){
+  var items = [];
   for(var i = 0; i < 5; i++){
-
-    var c = group.addGroup(AItem);
-    c.addShape({
-      id : i,
-      type : 'circle',
-      attrs : {
-        r : 10,
-        cx : 50 * (i + 1),
-        cy : 100,
-        stroke : colors[i]
-      }
-    });
-
     items.push({
       name : 'test ' + i,
       color : colors[i],
       type : types[i],
-      symbol : symbols[i],
-      item : c
+      symbol : symbols[i]
     });
   }
-  var range = new PlotRange({y : 460,x : 40},{x : 460,y : 40}),
-    legend = canvas.addGroup(Legend,{
+
+  var legend = canvas.addGroup(Legend,{
       items : items,
+      leaveChecked : true,
       plotRange : range
-    });
-
-  var itemsGroup = legend.get('itemsGroup');
-
-describe('achart-legend', function() {
+    }),
+    itemsGroup = legend.get('itemsGroup');
 
   it('create', function() {
     expect(itemsGroup).not.to.be(undefined);
@@ -103,108 +85,98 @@ describe('achart-legend', function() {
   });
 
   it('change',function(){
-    var items = [];
-    group.clear();
     for(var i = 0; i < 6; i++){
-      var c = group.addGroup(AItem);
-      c.addShape({
-        id : i,
-        type : 'circle',
-        attrs : {
-          r : 10,
-          cx : 50 * (i + 1),
-          cy : 100,
-          stroke : colors[i]
-        }
-      });
-
       items.push({
         name : 'new ' + i,
         color : colors[i],
         type : types[i],
-        symbol : symbols[i],
-        item : c
+        symbol : symbols[i]
       });
     }
     legend.setItems(items);
 
     expect(itemsGroup.getCount()).to.be(items.length);
-  }); 
+
+  });
 
   it('add item',function(){
-    var count = itemsGroup.getCount(),
-      c = group.addGroup(AItem);
-      c.addShape({
-        id : 8,
-        type : 'circle',
-        attrs : {
-          r : 10,
-          cx : 50 * (8 + 1),
-          cy : 100,
-          stroke : colors[i]
-        }
-      });
+    var count = itemsGroup.getCount();
 
       var item = {
         name : 'add',
         color : 'red',
         type : 'line',
-        symbol : 'square',
-        item : c
+        symbol : 'square'
       };
     legend.addItem(item);
 
     expect(itemsGroup.getCount()).to.be(count + 1);
   });
 
-  it('hover',function(){
-    var item = itemsGroup.getFirst();
-    Simulate.simulate(item.get('node'),'mouseover');
+  it('hover and out',function(){
+    var item = itemsGroup.getFirst(),
+      callback = sinon.spy(),
+      callback1 = sinon.spy();
 
-    expect(item.get('item').get('actived')).to.be(true);
+    legend.on('itemover',callback);
+    legend.on('itemout',callback1);
+
+
+    Simulate.simulate(item.get('node'),'mouseover');
+    expect(callback.called).to.be(true);
 
     Simulate.simulate(item.get('node'),'mouseout');
-    expect(item.get('item').get('actived')).to.be(false);
+    expect(callback1.called).to.be(true);
+
+    legend.off('itemover',callback);
+    legend.off('itemout',callback1);
   });
 
-  it('click',function(){
-    var item = itemsGroup.getLast();
+  it('click & checked',function(){
+    var item = itemsGroup.getLast(),
+      callback = sinon.spy(),
+      callback1 = sinon.spy(),
+      callback2 = sinon.spy();
+    legend.on('itemclick',callback);
+    legend.on('itemchecked',callback1);
+    legend.on('itemunchecked',callback2)
 
     Simulate.simulate(item.get('node'),'click');
 
-    expect(item.get('item').get('visible')).to.be(false);
+    expect(callback.called).to.be(true);
+    expect(callback2.called).to.be(true);
 
     Simulate.simulate(item.get('node'),'click');
-
-    expect(item.get('item').get('visible')).to.be(true);
+    
+    expect(callback1.called).to.be(true);
+    legend.off('itemclick',callback);
+    legend.off('itemchecked',callback1);
+    legend.off('itemunchecked',callback2)
   });
 
+
+  it('prevent mousemove',function(){
+
+    var callback = sinon.spy();
+
+    canvas.on('mousemove',callback);
+    Simulate.simulate(legend.get('node'),'mousemove');
+
+    expect(callback.called).to.be(false);
+
+    canvas.off('mousemove',callback);
+
+  });
 });
 
 describe('legend vertical',function(){
-  var group1 = canvas.addGroup(AItem),
-    items1 = [];
+  var items1 = [];
   for(var i = 0; i < 5; i++){
-
-    var c = group1.addGroup(AItem);
-    c.addShape({
-      id : i,
-      type : 'rect',
-      attrs : {
-        width : 20,
-        height : 20,
-        x : 50 * (i + 1),
-        y : 200,
-        stroke : colors[i]
-      }
-    });
-
     items1.push({
       name : 'test ' + i,
       color : colors[i],
       type : types[i],
-      symbol : symbols[i],
-      item : c
+      symbol : symbols[i]
     });
   }
   var legend1 = canvas.addGroup(Legend,{
@@ -220,3 +192,187 @@ describe('legend vertical',function(){
     expect(children[0].get('y') < children[1].get('y')).to.be(true);
   });
 });
+
+describe('use legend', function() {
+
+  var AGroup = function(cfg){
+    AGroup.superclass.constructor.call(this,cfg);
+  };
+
+  AGroup.ATTRS = {
+    circles : null
+  };
+  Util.extend(AGroup,PlotItem);
+
+  Util.mixin(AGroup,[Actived.Group,Legend.UseLegend]);
+
+  Util.augment(AGroup,{
+    renderUI : function(){
+      AGroup.superclass.renderUI.call(this);
+      this._renderCircles(this.get('circles'));
+      this.renderLegend();
+    },
+    _renderCircles : function(circles){
+      var _self = this;
+
+      _self.clear();
+      Util.each(circles,function(circle){
+        _self.addShape('circle',circle);
+      });
+
+    },
+    //覆写子项是否 actived
+    isItemActived : function(item){
+      return item.get('actived');
+    },
+    //覆写状态改变
+    setItemActived : function(item,actived){
+
+      var stroke = item.get('attrs').stroke;
+      if(actived){
+        item.set('actived',true);
+        item.attr('stroke',Util.dark(stroke,0.2));
+      }else{
+        item.set('actived',false);
+        item.attr('stroke',Util.highlight(stroke,0.2));
+      }
+    },
+    addCircle : function(circle){
+     var child = this.addShape('circle',circle);
+      var item = {
+          name : 'new ',
+          color : child.attr('stroke'),
+          type : 'circle',
+          item : child
+      };
+      this.addLengendItem(item);
+    },
+    //更改内部圆
+    changeCircles : function(circles){
+
+      this.set('circles',circles);
+      this._renderCircles(circles);
+      this.resetLegendItems();
+    },
+    //覆写 getLengendItems 方法
+    getLengendItems : function(){
+      var _self = this,
+        children = _self.get('children'),
+        items = [];
+      Util.each(children,function(child,i){
+        var item = {
+          name : 'test ' + i,
+          color : child.attr('stroke'),
+          type : types[i],
+          symbol : symbols[i],
+          item : child
+        };
+        items.push(item);
+      });
+
+      return items;
+    },
+    //覆写清空
+    remove : function(){
+      this.removeLegend();
+      AGroup.superclass.remove.call(this);
+    }
+  });
+
+  var circles = [];
+
+  for(var i = 0; i < 5; i++){
+    circles.push({
+      r : 10,
+      cx : 50 * (i + 1),
+      cy : 100,
+      stroke : colors[i]
+    });
+  }
+
+  var group = canvas.addGroup(AGroup,{
+    legend : {
+      x : 100,
+      y : 150
+    },
+    circles : circles
+  });
+
+  var legend = group.get('legendGroup'),
+    itemsGroup = legend.get('itemsGroup');
+
+  it('create',function(){
+    expect(legend).not.to.be(undefined);
+  });
+
+  it('items',function(){
+    expect(itemsGroup.getCount()).to.be(group.getCount());
+  });
+
+  it('addItem',function(){
+    var count = group.getCount();
+    group.addCircle({
+      r : 10,
+      cx : 100,
+      cy : 200,
+      stroke : 'red'
+    });
+
+    expect(group.getCount()).to.be(count + 1);
+    expect(itemsGroup.getCount()).to.be(count + 1);
+  });
+
+  it('change',function(){
+    var circles1 = [];
+    for(var i = 0; i < 6; i++){
+      circles1.push({
+        r : 10,
+        cx : 50 * (i + 1),
+        cy : 100,
+        stroke : colors[i]
+      });
+    }
+    group.changeCircles(circles1);
+
+    expect(itemsGroup.getCount()).to.be(group.getCount());
+    expect(itemsGroup.getCount()).to.be(circles1.length);
+
+  });
+
+  it('hover',function(){
+    var first = itemsGroup.getFirst();
+
+    Simulate.simulate(first.get('node'),'mouseover');
+
+    expect(group.getFirst().get('actived')).to.be(true);
+  });
+
+  it('out',function(){
+    var first = itemsGroup.getFirst();
+
+    Simulate.simulate(first.get('node'),'mouseout');
+
+    expect(group.getFirst().get('actived')).to.be(false);
+  });
+
+  it('unchecked',function(){
+    var last = itemsGroup.getLast();
+    Simulate.simulate(last.get('node'),'click');
+
+    expect(group.getLast().get('visible')).to.be(false);
+  });
+
+  it('checked',function(){
+     var last = itemsGroup.getLast();
+    Simulate.simulate(last.get('node'),'click');
+
+    expect(group.getLast().get('visible')).to.be(true);
+  });
+
+  it('remove',function(){
+    group.remove();
+    expect(legend.get('destroyed')).to.be(true);
+  });
+
+});
+

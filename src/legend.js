@@ -13,7 +13,6 @@ var Util = require('achart-util'),
  * @class Chart.Legend
  * 图例
  * @extends Chart.PlotItem
- * @mixins Chart.ActivedGroup
  */
 var Legend = function(cfg){
   Legend.superclass.constructor.call(this,cfg);
@@ -33,6 +32,18 @@ Legend.ATTRS = {
    * @type {Object}
    */
   itemCfg : null,
+
+  /**
+   * 是否可以勾选
+   * @type {Boolean}
+   */
+  checkable : true,
+
+  /**
+   * 是否保留最后一项勾选
+   * @type {Boolean}
+   */
+  leaveChecked : false,
 
   /**
    * 布局方式： horizontal，vertical
@@ -63,6 +74,41 @@ Legend.ATTRS = {
       fill : '#fff'
     }
 
+  /**
+   * @event itemover
+   * 图例项鼠标进入
+   * @param {Object} ev 事件对象
+   * @param {Chart.Legend.Item} 图例项
+   */
+  
+  /**
+   * @event itemout
+   * 图例项鼠标 out
+   * @param {Object} ev 事件对象
+   * @param {Chart.Legend.Item} 图例项
+   */
+  
+  /**
+   * @event itemclick
+   * 图例项鼠标点击
+   * @param {Object} ev 事件对象
+   * @param {Chart.Legend.Item} 图例项
+   */
+
+
+   /**
+   * @event itemchecked
+   * 图例项勾选
+   * @param {Object} ev 事件对象
+   * @param {Chart.Legend.Item} 图例项
+   */
+  
+  /**
+   * @event itemunchecked
+   * 图例项取消勾选
+   * @param {Object} ev 事件对象
+   * @param {Chart.Legend.Item} 图例项
+   */
 }
 
 Util.extend(Legend,PlotItem);
@@ -78,6 +124,7 @@ Util.augment(Legend,{
   bindUI : function(){
     Legend.superclass.bindUI.call(this);
     var _self = this;
+
     _self.on('mousemove',function(ev){
       if(ev.stopPropagation){
         ev.stopPropagation();
@@ -85,7 +132,84 @@ Util.augment(Legend,{
         window.event.cancelBubble = true;  
       }
     });
+    
+    _self._bindOverOut();
+    _self._bindClick();
   },
+  //绑定over ,out
+  _bindOverOut : function(){
+    var _self = this;
+
+    _self.on('mouseover',function(ev){
+      var item = _self.getItemByNode(ev.target);
+      if(item){
+        _self.fire('itemover',{item : item});
+      }
+    });
+    _self.on('mouseout',function(ev){
+      var item = _self.getItemByNode(ev.target);
+      if(item){
+        _self.fire('itemout',{item : item});
+      }
+    });
+  },
+  //绑定点击事件
+  _bindClick : function(){
+    var _self = this,
+      checkable = _self.get('checkable');
+    if(checkable){
+      _self.on('click',function(ev){
+        var item = _self.getItemByNode(ev.target);
+        if(item){
+          _self.fire('itemclick',{item : item});
+          if(checkable){
+            var checked = item.get('checked');
+            if(_self.get('leaveChecked') && checked && _self._getLeaveCount() == 1){
+              return;
+            }
+            item.set('checked',!checked);
+            if(checked){
+              _self.fire('itemunchecked',{item : item});
+            }else{
+              _self.fire('itemchecked',{item : item});
+            }
+          }
+        }
+      });
+    }
+  },
+  /**
+   * @protected
+   * 根据DOM 获取图例子项
+   */
+  getItemByNode : function(node){
+    var _self = this,
+      itemsGroup = _self.get('itemsGroup'),
+      items = itemsGroup.get('children'),
+      rst = null;
+
+    Util.each(items,function(item){
+      if(item.containsElement(node)){
+        rst = item;
+        return false;
+      }
+    });
+
+    return rst;
+  },
+
+  _getLeaveCount : function(){
+    var _self = this,
+      itemsGroup = _self.get('itemsGroup'),
+      items = itemsGroup.get('children'),
+      tmpArr = [];
+
+    tmpArr = Util.filter(items,function(item){
+      return item.get('checked');
+    })
+    return tmpArr.length;
+  },
+
   _renderItems : function(){
     var _self = this,
       items = _self.get('items'),
@@ -184,8 +308,12 @@ Util.augment(Legend,{
   resetPosition : function(){
     var _self = this,
       align = _self.get('align'),
-      plotRange = _self.get('plotRange'),
-      top = plotRange.tl,
+      plotRange = _self.get('plotRange');
+
+    if(!plotRange){
+      return;
+    }
+    var  top = plotRange.tl,
       end = plotRange.br,
       dx = _self.get('dx'),
       dy = _self.get('dy'),
@@ -197,11 +325,11 @@ Util.augment(Legend,{
         y = top.y;
         break;
       case 'left':
-        x = top.x - width;
+        x = top.x;
         y = (top.y + end.y)/2;
         break;
       case 'right':
-        x = end.x;
+        x = end.x - width;
         y = (top.y + end.y)/2;
         break;
       case 'bottom':

@@ -1,5 +1,6 @@
-var achartLegend = require('./src/legend');
+var Legend = require('./src/legend');
 
-achartLegend.Item = require('./src/legenditem');
+Legend.Item = require('./src/legenditem');
+Legend.UseLegend = require('./src/uselegend');
 
-module.exports = achartLegend;
+module.exports = Legend;
