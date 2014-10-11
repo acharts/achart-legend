@@ -16,7 +16,13 @@ UseLegend.ATTRS = {
    * legend配置项
    * @type {Object}
    */
-  legend : null
+  legend : null,
+
+  /**
+   * 生成的Legend对象
+   * @type {Object}
+   */
+  legendGroup : null
 }
 
 UseLegend.prototype = {

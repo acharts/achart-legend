@@ -43,7 +43,7 @@ Legend.ATTRS = {
    * 是否保留最后一项勾选
    * @type {Boolean}
    */
-  leaveChecked : false,
+  leaveChecked : true,
 
   /**
    * 布局方式： horizontal，vertical
