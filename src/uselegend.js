@@ -6,6 +6,10 @@ var Util = require('achart-util'),
 /**
  * @class Chart.Legend.UseLegend
  * 使用图例的扩展
+ * 
+ * - <a href="http://spmjs.io/docs/achart-legend/#legend-uselegend" target="_blank">文档</a>
+ * - <a href="http://spmjs.io/docs/achart-legend/wiki/use.html" target="_blank">wiki</a>
+ * 
  */
 var UseLegend = function () {
   // body...
