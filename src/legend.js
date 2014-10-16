@@ -12,7 +12,11 @@ var Util = require('achart-util'),
 /**
  * @class Chart.Legend
  * 图例
- * @extends Chart.PlotItem
+ *
+ * - <a href="http://spmjs.io/docs/achart-legend/" target="_blank">文档</a>
+ * - <a href="http://spmjs.io/docs/achart-legend/wiki/" target="_blank">wiki</a>
+ * 
+ * @extends Chart.Plot.Item
  */
 var Legend = function(cfg){
   Legend.superclass.constructor.call(this,cfg);
@@ -75,24 +79,24 @@ Legend.ATTRS = {
     }
 
   /**
-   * @event itemover
+   * @event itemover 
    * 图例项鼠标进入
    * @param {Object} ev 事件对象
-   * @param {Chart.Legend.Item} 图例项
+   * @param {Chart.Legend.Item}  ev.item 图例项
    */
   
   /**
-   * @event itemout
+   * @event itemout 
    * 图例项鼠标 out
    * @param {Object} ev 事件对象
-   * @param {Chart.Legend.Item} 图例项
+   * @param {Chart.Legend.Item} ev.item  图例项
    */
   
   /**
-   * @event itemclick
+   * @event itemclick 
    * 图例项鼠标点击
    * @param {Object} ev 事件对象
-   * @param {Chart.Legend.Item} 图例项
+   * @param {Chart.Legend.Item} ev.item  图例项
    */
 
 
@@ -100,14 +104,14 @@ Legend.ATTRS = {
    * @event itemchecked
    * 图例项勾选
    * @param {Object} ev 事件对象
-   * @param {Chart.Legend.Item} 图例项
+   * @param {Chart.Legend.Item} ev.item  图例项
    */
   
   /**
    * @event itemunchecked
    * 图例项取消勾选
    * @param {Object} ev 事件对象
-   * @param {Chart.Legend.Item} 图例项
+   * @param {Chart.Legend.Item} ev.item  图例项
    */
 }
 

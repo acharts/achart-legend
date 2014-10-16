@@ -4,7 +4,7 @@ var Util = require('achart-util'),
   Legend = require('./legend');
 
 /**
- * @class Chart.Lengend.UseLegend
+ * @class Chart.Legend.UseLegend
  * 使用图例的扩展
  */
 var UseLegend = function () {
@@ -20,7 +20,7 @@ UseLegend.ATTRS = {
 
   /**
    * 生成的Legend对象
-   * @type {Object}
+   * @type {Chart.Legend}
    */
   legendGroup : null
 }
@@ -37,7 +37,7 @@ UseLegend.prototype = {
       canvas = _self.get('canvas');
     if(legend){
       if(!legend.plotRange){
-        legend.plotRange = _self.get('plotRange');
+        legend.plotRange = _self.get('plotRange') || _self.get('parent').get('plotRange');
       }
        legend.items = legend.items || _self.getLengendItems();
       var 

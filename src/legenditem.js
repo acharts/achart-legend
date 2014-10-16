@@ -11,7 +11,11 @@ var Util = require('achart-util'),
 /**
  * @class Chart.Legend.Item
  * 图例的子项，用于标示其中一个数据序列
- * @extends Chart.PlotItem
+ * 
+ * - <a href="http://spmjs.io/docs/achart-legend/" target="_blank">文档</a>
+ * - <a href="http://spmjs.io/docs/achart-legend/wiki/" target="_blank">wiki</a>
+ * 
+ * @extends Chart.Plot.Item
  * @mixins Chart.Actived
  */
 var LegendItem = function(cfg){
