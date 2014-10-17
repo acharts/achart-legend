@@ -33,6 +33,8 @@ var Legend = require('achart-legend');
   * checkable 子选项是否可以触发checked 操作，默认所有的选项都是勾选
   * leaveChecked 是否保留一项不能取消勾选，默认为false
   * back 图例外边框和背景的配置信息，是一个矩形，参考[矩形配置信息](http://spmjs.io/docs/achart-canvas/#rect)
+  * spacingX 子项之间的间距，x轴方向
+  * spacingY 子项之间的间距，y轴方向
 
 ### 方法
   

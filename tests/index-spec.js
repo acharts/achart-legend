@@ -38,6 +38,7 @@ describe('legend',function(){
   var legend = canvas.addGroup(Legend,{
       items : items,
       leaveChecked : true,
+      spacingX : 10,
       plotRange : range
     }),
     itemsGroup = legend.get('itemsGroup');

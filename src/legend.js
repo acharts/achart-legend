@@ -32,6 +32,14 @@ Legend.ATTRS = {
   items : null,
 
   /**
+   * 排布时子项之间间距
+   * @type {[type]}
+   */
+  spacingX : PADDING,
+
+  spacingY : PADDING,
+
+  /**
    * 子项的配置信息
    * @type {Object}
    */
@@ -355,13 +363,13 @@ Util.augment(Legend,{
   _getNextX : function(){
     var _self = this,
       layout = _self.get('layout'),
-      
-      nextX = PADDING;
+      spacing = _self.get('spacingX'),
+      nextX = spacing;
     if(layout == 'horizontal'){
       var children = _self.get('itemsGroup').get('children');
       Util.each(children,function(item){
         if(item.isGroup){
-          nextX += (item.getWidth() + PADDING);
+          nextX += (item.getWidth() + spacing);
         }
       });
     }
@@ -370,28 +378,31 @@ Util.augment(Legend,{
   //获取下一个图例项的y坐标
   _getNextY : function(){
     var _self = this,
+      spacing = _self.get('spacingY'),
       layout = _self.get('layout');
     if(layout == 'horizontal'){
-      return PADDING;
+      return spacing;
     }else{
-      return LINE_HEIGHT * _self._getCount() + PADDING ;
+      return LINE_HEIGHT * _self._getCount() + spacing ;
     }
   },
   //获取总的宽度
   _getTotalWidth : function(){
-    var _self = this;
+    var _self = this,
+      spacing = _self.get('spacingX');
+
     if(_self.get('layout') == 'horizontal'){
       return this._getNextX();
     }else{
       var children = _self.get('itemsGroup').get('children'),
-        max = PADDING;
+        max = spacing;
       Util.each(children,function(item){
         var width = item.getWidth();
         if(item.isGroup && width > max){
           max = width;
         }
       });
-      return max + PADDING * 2;
+      return max + spacing * 2;
     }
     
   },
