@@ -76,6 +76,7 @@ seajs.use(['index','achart-canvas','achart-plot'], function(Legend,Canvas,Plot) 
     dx : -10,//在定位的地点偏移x
     dy : 20, //在定位的地点偏移y
     align : 'right',
+    spacingY : 10,
     plotRange : range
   });
 

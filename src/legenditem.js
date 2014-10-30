@@ -6,7 +6,8 @@
 
 var Util = require('achart-util'),
 	PlotItem = require('achart-plot').Item,
-	MARKER_WIDTH = 20;
+	MARKER_WIDTH = 20,
+  ALIGN_Y = 7;
 
 /**
  * @class Chart.Legend.Item
@@ -32,7 +33,7 @@ LegendItem.ATTRS = {
 	label : {
 		x : MARKER_WIDTH,
 		'text-anchor': 'start',
-		y : 7,
+		y : ALIGN_Y,
 		cursor : 'pointer',
 	},
   /**
@@ -179,7 +180,14 @@ Util.augment(LegendItem,{
 			cfg = Util.mix({},label,{
 				text : text
 			}),
-			labelShape = _self.addShape('label',cfg);
+			labelShape;
+    if(!cfg.x){
+      cfg.x = MARKER_WIDTH;
+    }
+    if(!cfg.y){
+      cfg.y = ALIGN_Y;
+    }
+    labelShape = _self.addShape('label',cfg);
 		_self.set('labelShape',labelShape);
 	},
 	//创建跟序列相关的图形

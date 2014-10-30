@@ -379,11 +379,12 @@ Util.augment(Legend,{
   _getNextY : function(){
     var _self = this,
       spacing = _self.get('spacingY'),
-      layout = _self.get('layout');
+      layout = _self.get('layout'),
+      count = _self._getCount();
     if(layout == 'horizontal'){
       return spacing;
     }else{
-      return LINE_HEIGHT * _self._getCount() + spacing ;
+      return LINE_HEIGHT * count + spacing * (count + 1) ;
     }
   },
   //获取总的宽度
