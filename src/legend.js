@@ -51,6 +51,15 @@ Legend.ATTRS = {
    */
   checkable : true,
 
+  titleCfg: {
+    'text-anchor': 'start',
+    'font-size': 12,
+    y: 10,
+    x: 15
+  },
+
+  title: null,
+
   /**
    * 是否保留最后一项勾选
    * @type {Boolean}
@@ -130,6 +139,7 @@ Util.augment(Legend,{
   renderUI : function(){
     var _self = this
     Legend.superclass.renderUI.call(_self);
+    _self._renderTitle();
     _self._renderItems();
     _self._renderBorder();    
   },
@@ -281,6 +291,45 @@ Util.augment(Legend,{
     itemsGroup.addGroup(Item,cfg);
   },
 
+  _renderTitle: function(){
+    var _self = this,
+      titleCfg = _self.get('titleCfg'),
+      title = _self.get('title'),
+      titleShape,
+      cfg;
+
+    if (title) {
+      cfg = Util.mix({},titleCfg,{
+        text : title
+      });
+      titleShape = _self.addShape('text',cfg);
+      _self.set('titleShape',titleShape);
+    }
+  },
+  // 获取title的高度
+  _getTitleHeight: function(){
+    var _self = this,
+      titleShape = _self.get('titleShape'),
+      rst = 0,
+      bbox;
+    if (titleShape) {
+      bbox = titleShape.getBBox();
+      rst = bbox.height + bbox.y;
+    }
+    return rst;
+  },
+  // 获取title 宽度
+  _getTitleWidth: function(){
+    var _self = this,
+      titleShape = _self.get('titleShape'),
+      rst = 0,
+      bbox;
+    if (titleShape) {
+      bbox = titleShape.getBBox();
+      rst = bbox.width + bbox.x + PADDING;
+    }
+    return rst;
+  },
   //生成边框
   _renderBorder : function(){
     var _self = this,
@@ -365,6 +414,7 @@ Util.augment(Legend,{
       layout = _self.get('layout'),
       spacing = _self.get('spacingX'),
       nextX = spacing;
+
     if(layout == 'horizontal'){
       var children = _self.get('itemsGroup').get('children');
       Util.each(children,function(item){
@@ -380,20 +430,25 @@ Util.augment(Legend,{
     var _self = this,
       spacing = _self.get('spacingY'),
       layout = _self.get('layout'),
-      count = _self._getCount();
+      count = _self._getCount(),
+      titleHeight = _self._getTitleHeight(),
+      rst;
     if(layout == 'horizontal'){
-      return spacing;
+      rst = spacing;
     }else{
-      return LINE_HEIGHT * count + spacing * (count + 1) ;
+      rst = LINE_HEIGHT * count + spacing * (count + 1) ;
     }
+    return rst + titleHeight;
   },
   //获取总的宽度
   _getTotalWidth : function(){
     var _self = this,
-      spacing = _self.get('spacingX');
+      spacing = _self.get('spacingX'),
+      width,
+      titleWidth = _self._getTitleWidth();
 
     if(_self.get('layout') == 'horizontal'){
-      return this._getNextX();
+      width = this._getNextX();
     }else{
       var children = _self.get('itemsGroup').get('children'),
         max = spacing;
@@ -403,9 +458,10 @@ Util.augment(Legend,{
           max = width;
         }
       });
-      return max + spacing * 2;
+      width = max + spacing * 2;
     }
-    
+
+    return Math.max(width,titleWidth);
   },
   //获取整体的高度
   _getTotalHeight : function(){
@@ -413,7 +469,7 @@ Util.augment(Legend,{
       nextY = _self._getNextY();
 
     if(_self.get('layout') == 'horizontal'){
-      return LINE_HEIGHT + PADDING * 2;
+      return LINE_HEIGHT + PADDING * 2 + _self._getTitleHeight();
     }
     return nextY + PADDING;
   }

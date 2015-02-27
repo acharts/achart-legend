@@ -23,7 +23,7 @@ var
   colors = [ '#ff6600','#b01111','#ac5724','#572d8a','#333333','#7bab12','#c25e5e','#a6c96a','#133960','#2586e7'];
 
  
-  var range = new PlotRange({y : 460,x : 40},{x : 460,y : 40});
+  var range = new PlotRange({y : 450,x : 50},{x : 450,y : 50});
 describe('legend',function(){
   var items = [];
   for(var i = 0; i < 5; i++){
@@ -50,7 +50,7 @@ describe('legend',function(){
 
   it('position bottom',function(done){
     setTimeout(function(){
-      expect(legend.get('y')).to.be(460);
+      expect(legend.get('y')).to.be(450);
       done();
     },500);
   });
@@ -59,7 +59,7 @@ describe('legend',function(){
     legend.set('align','top');
     legend.resetPosition();
     setTimeout(function(){
-      expect(legend.get('y')).to.be(40);
+      expect(legend.get('y')).to.be(50);
       done();
     },500);
   });
@@ -376,4 +376,76 @@ describe('use legend', function() {
   });
 
 });
+
+describe('legend title',function(){
+  var items = [];
+  for(var i = 0; i < 5; i++){
+    items.push({
+      name : 'test ' + i,
+      color : colors[i],
+      type : types[i],
+      symbol : symbols[i]
+    });
+  }
+
+  var legend = canvas.addGroup(Legend,{
+      items : items,
+      leaveChecked : true,
+      title: '这是一个title',
+      spacingX : 10,
+      plotRange : range
+    }),
+    itemsGroup = legend.get('itemsGroup');
+
+  it('create', function() {
+    expect(itemsGroup).not.to.be(undefined);
+    expect(itemsGroup.getCount()).to.be(items.length);
+  });
+
+  it('title', function() {
+    expect(legend.get('titleShape')).not.to.be(undefined);
+  });
+
+  it('totalHeight',function(){
+    expect(legend._getTotalHeight() > 25).to.be(true);
+  });
+ 
+});
+
+describe('legend vertical title',function(){
+  var items = [];
+  for(var i = 0; i < 5; i++){
+    items.push({
+      name : 'test ' + i,
+      color : colors[i],
+      type : types[i],
+      symbol : symbols[i]
+    });
+  }
+
+  var legend = canvas.addGroup(Legend,{
+      items : items,
+      leaveChecked : true,
+      title: '这是一个title',
+      layout : 'vertical',
+      align : 'left',
+      plotRange : range
+    }),
+    itemsGroup = legend.get('itemsGroup');
+
+  it('create', function() {
+    expect(itemsGroup).not.to.be(undefined);
+    expect(itemsGroup.getCount()).to.be(items.length);
+  });
+
+  it('title', function() {
+    expect(legend.get('titleShape')).not.to.be(undefined);
+  });
+
+  it('totalWidth',function(){
+    expect(legend._getTotalWidth() > 55).to.be(true);
+  });
+ 
+});
+
 

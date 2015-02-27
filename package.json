@@ -1,6 +1,6 @@
 {
   "name": "achart-legend",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "legend for acharts",
   "keywords": ["acharts"],
   "homepage": "https://github.com/acharts/achart-legend",
@@ -21,6 +21,7 @@
     },
     "devDependencies": {
       "expect.js": "0.3.1",
+      "achart-canvas" : "~1.1.0",
       "achart-actived" : "~1.0.1",
       "sinon" : "1.6.0",
       "event-simulate" : "1.0.0"
