@@ -26,17 +26,21 @@ Legend.ATTRS = {
   zIndex : 8,
   elCls : 'x-chart-legend',
   /**
-   * 子项的集合
+   * 子项的集合 详见Chart.Legend.Item
    * @type {Array}
    */
   items : null,
 
   /**
-   * 排布时子项之间间距
-   * @type {[type]}
+   * 排布时子项之间x间距 可以是一个padding数组 默认是5
+   * @type {Array || Number}
    */
   spacingX : PADDING,
 
+  /**
+   * 排布时子项之间y间距 可以是一个padding数组 默认是5
+   * @type {Array || Number}
+   */
   spacingY : PADDING,
 
   /**
@@ -51,6 +55,10 @@ Legend.ATTRS = {
    */
   checkable : true,
 
+  /**
+   * 标题配置信息
+   * @type {Object}
+   */
   titleCfg: {
     'text-anchor': 'start',
     'font-size': 12,
@@ -58,6 +66,10 @@ Legend.ATTRS = {
     x: 15
   },
 
+  /**
+   * 标题
+   * @type {String}
+   */
   title: null,
 
   /**
