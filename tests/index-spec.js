@@ -18,15 +18,16 @@ var canvas = new Canvas({
 });
 
 var 
-  types = ['circle','line','rect','circle','line'],
-  symbols = ['circle','diamond','square','triangle','triangle-down'],
+  types = ['circle','line','rect','circle','line','circle','line','rect','circle','line'],
+  symbols = ['circle','diamond','square','triangle','triangle-down','circle','diamond','square','triangle','triangle-down'],
   colors = [ '#ff6600','#b01111','#ac5724','#572d8a','#333333','#7bab12','#c25e5e','#a6c96a','#133960','#2586e7'];
 
  
   var range = new PlotRange({y : 450,x : 50},{x : 450,y : 50});
+
 describe('legend',function(){
   var items = [];
-  for(var i = 0; i < 5; i++){
+  for(var i = 0; i < 10; i++){
     items.push({
       name : 'test ' + i,
       color : colors[i],
@@ -41,11 +42,21 @@ describe('legend',function(){
       spacingX : 10,
       plotRange : range
     }),
-    itemsGroup = legend.get('itemsGroup');
+    itemsGroups = legend.get('itemsGroups');
 
+  function getTotalCount(){
+    var totalCount = 0;
+    var itemsGroups = legend.get('itemsGroups');
+    Util.each(itemsGroups,function(ig,i){
+      totalCount += ig.get('children').length;
+    })
+    return totalCount;
+  }
+  var itemsGroup = legend.get('itemsGroup');
   it('create', function() {
     expect(itemsGroup).not.to.be(undefined);
-    expect(itemsGroup.getCount()).to.be(items.length);
+    
+    expect(getTotalCount()).to.be(items.length);
   });
 
   it('position bottom',function(done){
@@ -95,13 +106,11 @@ describe('legend',function(){
       });
     }
     legend.setItems(items);
-
-    expect(itemsGroup.getCount()).to.be(items.length);
-
+    expect(getTotalCount()).to.be(items.length);
   });
 
   it('add item',function(){
-    var count = itemsGroup.getCount();
+    var count = getTotalCount();
 
       var item = {
         name : 'add',
@@ -111,10 +120,11 @@ describe('legend',function(){
       };
     legend.addItem(item);
 
-    expect(itemsGroup.getCount()).to.be(count + 1);
+    expect(getTotalCount()).to.be(count + 1);
   });
 
   it('hover and out',function(){
+    var itemsGroup = legend.get('itemsGroup');
     var item = itemsGroup.getFirst(),
       callback = sinon.spy(),
       callback1 = sinon.spy();
@@ -134,6 +144,7 @@ describe('legend',function(){
   });
 
   it('click & checked',function(){
+    var itemsGroup = legend.get('itemsGroup');
     var item = itemsGroup.getLast(),
       callback = sinon.spy(),
       callback1 = sinon.spy(),
@@ -172,7 +183,7 @@ describe('legend',function(){
 
 describe('legend vertical',function(){
   var items1 = [];
-  for(var i = 0; i < 5; i++){
+  for(var i = 0; i < 20; i++){
     items1.push({
       name : 'test ' + i,
       color : colors[i],
@@ -184,12 +195,20 @@ describe('legend vertical',function(){
     plotRange : range,
     layout : 'vertical',
     align : 'right',
+    dy: -250,
     items : items1
   });
-
+  function getTotalCount(){
+    var totalCount = 0;
+    var itemsGroups = legend1.get('itemsGroups');
+    Util.each(itemsGroups,function(ig,i){
+      totalCount += ig.get('children').length;
+    })
+    return totalCount;
+  }
   it('create',function(){
-    var children = legend1.get('itemsGroup').get('children');
-    expect(children.length).to.be(items1.length);
+    var children = legend1.get('itemsGroups')[0].get('children');
+    expect(getTotalCount()).to.be(items1.length);
     expect(children[0].get('y') < children[1].get('y')).to.be(true);
   });
 });
@@ -300,7 +319,17 @@ describe('use legend', function() {
   });
 
   var legend = group.get('legendGroup'),
-    itemsGroup = legend.get('itemsGroup');
+    itemsGroup = legend.get('itemsGroup'),
+    itemsGroups = legend.get('itemsGroups');
+
+  function getTotalCount(){
+    var totalCount = 0;
+    var itemsGroups = legend.get('itemsGroups');
+    Util.each(itemsGroups,function(ig,i){
+      totalCount += ig.get('children').length;
+    })
+    return totalCount;
+  }
 
   it('create',function(){
     expect(legend).not.to.be(undefined);
@@ -335,13 +364,15 @@ describe('use legend', function() {
     }
     group.changeCircles(circles1);
 
-    expect(itemsGroup.getCount()).to.be(group.getCount());
-    expect(itemsGroup.getCount()).to.be(circles1.length);
+    expect(getTotalCount()).to.be(group.getCount());
+    expect(getTotalCount()).to.be(circles1.length);
 
   });
 
   it('hover',function(){
+    var itemsGroup = legend.get('itemsGroup');
     var first = itemsGroup.getFirst();
+
 
     Simulate.simulate(first.get('node'),'mouseover');
 
@@ -349,14 +380,16 @@ describe('use legend', function() {
   });
 
   it('out',function(){
+    var itemsGroup = legend.get('itemsGroup');
     var first = itemsGroup.getFirst();
-
+    console.log(itemsGroup);
     Simulate.simulate(first.get('node'),'mouseout');
 
     expect(group.getFirst().get('actived')).to.be(false);
   });
 
   it('unchecked',function(){
+    var itemsGroup = legend.get('itemsGroup');
     var last = itemsGroup.getLast();
     Simulate.simulate(last.get('node'),'click');
 
@@ -364,6 +397,7 @@ describe('use legend', function() {
   });
 
   it('checked',function(){
+    var itemsGroup = legend.get('itemsGroup');
      var last = itemsGroup.getLast();
     Simulate.simulate(last.get('node'),'click');
 
@@ -412,11 +446,14 @@ describe('legend title',function(){
  
 });
 
+function random(min,max){
+  return parseInt((max - min) * Math.random() + min);
+}
 describe('legend vertical title',function(){
   var items = [];
-  for(var i = 0; i < 5; i++){
+  for(var i = 0; i < 25; i++){
     items.push({
-      name : 'test ' + i,
+      name : 'test ' + random(1,100000),
       color : colors[i],
       type : types[i],
       symbol : symbols[i]
@@ -429,13 +466,23 @@ describe('legend vertical title',function(){
       title: '这是一个title',
       layout : 'vertical',
       align : 'left',
+      dy: -50,
       plotRange : range
     }),
     itemsGroup = legend.get('itemsGroup');
 
+  function getTotalCount(){
+    var totalCount = 0;
+    var itemsGroups = legend.get('itemsGroups');
+    Util.each(itemsGroups,function(ig,i){
+      totalCount += ig.get('children').length;
+    })
+    return totalCount;
+  }
+
   it('create', function() {
     expect(itemsGroup).not.to.be(undefined);
-    expect(itemsGroup.getCount()).to.be(items.length);
+    expect(getTotalCount()).to.be(items.length);
   });
 
   it('title', function() {
@@ -447,5 +494,3 @@ describe('legend vertical title',function(){
   });
  
 });
-
-

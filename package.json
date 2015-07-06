@@ -1,8 +1,10 @@
 {
   "name": "achart-legend",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "legend for acharts",
-  "keywords": ["acharts"],
+  "keywords": [
+    "acharts"
+  ],
   "homepage": "https://github.com/acharts/achart-legend",
   "author": "dxq613@gmail.com",
   "repository": {
@@ -16,15 +18,18 @@
   "spm": {
     "main": "index.js",
     "dependencies": {
-      "achart-util" : "~1.1.0",
-      "achart-plot" : "~1.1.0"
+      "achart-util": "~1.1.0",
+      "achart-plot": "~1.1.0"
     },
     "devDependencies": {
       "expect.js": "0.3.1",
-      "achart-canvas" : "~1.1.0",
-      "achart-actived" : "~1.0.1",
-      "sinon" : "1.6.0",
-      "event-simulate" : "1.0.0"
+      "achart-canvas": "~1.1.0",
+      "achart-actived": "~1.0.1",
+      "sinon": "1.6.0",
+      "event-simulate": "1.0.0"
     }
+  },
+  "dependencies": {
+    "spm": "~3.4.4"
   }
 }

@@ -103,9 +103,9 @@ Legend.ATTRS = {
    * @type {Object}
    */
   back : {
-      stroke : '#909090',
-      fill : '#fff'
-    }
+    stroke : '#909090',
+    fill : '#fff'
+  }
 
   /**
    * @event itemover 
@@ -249,6 +249,11 @@ Util.augment(Legend,{
       items = _self.get('items'),
       itemsGroup = _self.addGroup();
 
+    //添加itemsGroup数组
+    var itemsGroups = [];
+    _self.set('itemsGroups',itemsGroups);
+    itemsGroups.push(itemsGroup);
+    
     _self.set('itemsGroup',itemsGroup);
     _self._setItems(items);
    
@@ -283,12 +288,20 @@ Util.augment(Legend,{
    */
   setItems : function(items){
     var _self = this,
-      itemsGroup = _self.get('itemsGroup');
-    itemsGroup.clear();
-
+      itemsGroups = _self.get('itemsGroups');
+    
+    var length = itemsGroups.length;
+    for(var i = length - 1;i >= 0; i --){
+      var itemsGroup = itemsGroups[i];
+      itemsGroup.remove();
+    }
+    itemsGroups = [];
+    var itemsGroup = _self.addGroup();
+    itemsGroups.push(itemsGroup);
+    _self.set('itemsGroups',itemsGroups);
+    _self.set('itemsGroup',itemsGroup);
     _self.set('items',items);
     _self._setItems(items);
-
   },
   //添加图例
   _addItem : function(item,index){
@@ -300,9 +313,74 @@ Util.augment(Legend,{
       cfg = Util.mix({x : x,y : y},item,itemCfg);
 
     cfg.legend = _self;
-    itemsGroup.addGroup(Item,cfg);
+    var newItem = itemsGroup.addGroup(Item,cfg);
+    //判断是不是超出plotrange
+    _self._checkOverflow(item,index,newItem);
   },
+  //判断是否溢出
+  _checkOverflow: function(item,index,newItem){
+    var _self = this;
+    var itemsGroup = _self.get('itemsGroup');
+    var bBox = itemsGroup.getBBox();
+    var plotRange = _self.get('plotRange');
+    var spacingX = _self.get('spacingX');
+    var spacingY = _self.get('spacingY');
+    var itemsGroups = _self.get('itemsGroups');
+    if(!plotRange){
+      return;
+    }
+    var top = plotRange.tl;
+    var end = plotRange.br;
+    var maxWidth = end.x - top.x;
+    var maxHeight = end.y - top.y;
 
+    //横向排列
+    if(_self.get('layout') == 'horizontal'){
+      //溢出了
+      if(bBox.width + spacingX > maxWidth){
+        newItem.remove();
+        //缓存最大宽度
+        var borderWidth = _self.get('borderWidth');
+        if(!borderWidth){
+          _self.set('borderWidth',_self._getNextX());
+        }else{
+          _self.set('borderWidth',Math.max(_self._getNextX(),borderWidth));
+        }
+        //添加一个ItemGroup
+        var newItemGroup = _self.addGroup();
+        _self.set('itemsGroup',newItemGroup);
+        itemsGroups.push(newItemGroup);
+        _self._addItem(item,index);
+      }
+    }else{
+      var titleHeight = _self._getTitleHeight();
+      //console.log(bBox.height,spacingY,titleHeight,maxHeight,itemsGroup.get('node'),itemsGroup.getBBox())
+      //溢出了
+      if(bBox.height + spacingY + titleHeight> maxHeight ){
+        newItem.remove();
+
+        var borderWidth = _self.get('borderWidth') || 0;
+        //获取当前最宽
+        var currMaxWidth = 0;
+        Util.each(itemsGroup.get('children'),function(child,i){
+          var bb = child.getBBox();
+          currMaxWidth = Math.max(bb.width,currMaxWidth);
+        });
+        //缓存最大宽度
+        _self.set('borderWidth',borderWidth + currMaxWidth);
+        //缓存最大itemsGroup个数
+        var maxGroupCount = _self.get('maxGroupCount') || 0;
+        //console.log(index);
+        _self.set('maxGroupCount',0);
+        //添加一个ItemGroup
+        var newItemGroup = _self.addGroup();
+        _self.set('itemsGroup',newItemGroup);
+        itemsGroups.push(newItemGroup);
+        _self._addItem(item,index);
+      }
+    }
+  },
+  //设置标题
   _renderTitle: function(){
     var _self = this,
       titleCfg = _self.get('titleCfg'),
@@ -411,21 +489,32 @@ Util.augment(Legend,{
       default : 
         break;
     }
-
    _self.move(x+dx,y+dy);
 
   },
   //获取总的个数
   _getCount : function(){
-
     return this.get('itemsGroup').get('children').length;
+  },
+  //vertical的时候的高度
+  _getMaxHeight: function(){
+    var _self = this;
+    var itemsGroups = _self.get('itemsGroups');
+    var spacing = _self.get('spacingY');
+    var maxCount = 0;
+    Util.each(itemsGroups,function(itemsGroup,i){
+      maxCount = Math.max(itemsGroup.get('children').length,maxCount);
+    });
+    return LINE_HEIGHT * maxCount + spacing * (maxCount + 1) +  _self._getTitleHeight();;
   },
   //获取下一个图例项的x坐标
   _getNextX : function(){
     var _self = this,
       layout = _self.get('layout'),
-      spacing = _self.get('spacingX'),
-      nextX = spacing;
+      spacing = _self.get('spacingX');
+    var itemsGroups = _self.get('itemsGroups');
+    var groupCount = itemsGroups.length;
+    var nextX = spacing;
 
     if(layout == 'horizontal'){
       var children = _self.get('itemsGroup').get('children');
@@ -434,19 +523,24 @@ Util.augment(Legend,{
           nextX += (item.getWidth() + spacing);
         }
       });
+      return nextX;
+    }else{
+      var borderWidth = _self.get('borderWidth') || 0;
+      return nextX + borderWidth;
     }
-    return nextX;
   },
   //获取下一个图例项的y坐标
   _getNextY : function(){
     var _self = this,
       spacing = _self.get('spacingY'),
       layout = _self.get('layout'),
-      count = _self._getCount(),
+      count =  _self._getCount(),
       titleHeight = _self._getTitleHeight(),
       rst;
+    var itemsGroups = _self.get('itemsGroups');
+    var groupCount = itemsGroups.length;
     if(layout == 'horizontal'){
-      rst = spacing;
+      rst = spacing * groupCount + LINE_HEIGHT * (groupCount - 1);
     }else{
       rst = LINE_HEIGHT * count + spacing * (count + 1) ;
     }
@@ -460,8 +554,10 @@ Util.augment(Legend,{
       titleWidth = _self._getTitleWidth();
 
     if(_self.get('layout') == 'horizontal'){
-      width = this._getNextX();
+      var borderWidth = _self.get('borderWidth');
+      width = borderWidth || _self._getNextX();
     }else{
+      var borderWidth = _self.get('borderWidth') || 0;
       var children = _self.get('itemsGroup').get('children'),
         max = spacing;
       Util.each(children,function(item){
@@ -470,7 +566,7 @@ Util.augment(Legend,{
           max = width;
         }
       });
-      width = max + spacing * 2;
+      width = borderWidth + max + spacing * 2  ;
     }
 
     return Math.max(width,titleWidth);
@@ -479,11 +575,12 @@ Util.augment(Legend,{
   _getTotalHeight : function(){
     var _self = this,
       nextY = _self._getNextY();
-
+    var itemsGroups = _self.get('itemsGroups');
+    var groupCount = itemsGroups.length;
     if(_self.get('layout') == 'horizontal'){
-      return LINE_HEIGHT + PADDING * 2 + _self._getTitleHeight();
+      return LINE_HEIGHT * groupCount + PADDING * (1 + groupCount) + _self._getTitleHeight();
     }
-    return nextY + PADDING;
+    return _self._getMaxHeight();
   }
 });
 
