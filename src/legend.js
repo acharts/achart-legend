@@ -15,7 +15,7 @@ var Util = require('achart-util'),
  *
  * - <a href="http://spmjs.io/docs/achart-legend/" target="_blank">文档</a>
  * - <a href="http://spmjs.io/docs/achart-legend/wiki/" target="_blank">wiki</a>
- * 
+ *
  * @extends Chart.Plot.Item
  */
 var Legend = function(cfg){
@@ -108,21 +108,21 @@ Legend.ATTRS = {
   }
 
   /**
-   * @event itemover 
+   * @event itemover
    * 图例项鼠标进入
    * @param {Object} ev 事件对象
    * @param {Chart.Legend.Item}  ev.item 图例项
    */
-  
+
   /**
-   * @event itemout 
+   * @event itemout
    * 图例项鼠标 out
    * @param {Object} ev 事件对象
    * @param {Chart.Legend.Item} ev.item  图例项
    */
-  
+
   /**
-   * @event itemclick 
+   * @event itemclick
    * 图例项鼠标点击
    * @param {Object} ev 事件对象
    * @param {Chart.Legend.Item} ev.item  图例项
@@ -135,7 +135,7 @@ Legend.ATTRS = {
    * @param {Object} ev 事件对象
    * @param {Chart.Legend.Item} ev.item  图例项
    */
-  
+
   /**
    * @event itemunchecked
    * 图例项取消勾选
@@ -153,7 +153,7 @@ Util.augment(Legend,{
     Legend.superclass.renderUI.call(_self);
     _self._renderTitle();
     _self._renderItems();
-    _self._renderBorder();    
+    _self._renderBorder();
   },
   bindUI : function(){
     Legend.superclass.bindUI.call(this);
@@ -163,10 +163,10 @@ Util.augment(Legend,{
       if(ev.stopPropagation){
         ev.stopPropagation();
       }else{
-        window.event.cancelBubble = true;  
+        window.event.cancelBubble = true;
       }
     });
-    
+
     _self._bindOverOut();
     _self._bindClick();
   },
@@ -253,10 +253,10 @@ Util.augment(Legend,{
     var itemsGroups = [];
     _self.set('itemsGroups',itemsGroups);
     itemsGroups.push(itemsGroup);
-    
+
     _self.set('itemsGroup',itemsGroup);
     _self._setItems(items);
-   
+
   },
   //设置子项
   _setItems : function(items){
@@ -289,7 +289,7 @@ Util.augment(Legend,{
   setItems : function(items){
     var _self = this,
       itemsGroups = _self.get('itemsGroups');
-    
+
     var length = itemsGroups.length;
     for(var i = length - 1;i >= 0; i --){
       var itemsGroup = itemsGroups[i];
@@ -310,7 +310,7 @@ Util.augment(Legend,{
       x = _self._getNextX(),
       y = _self._getNextY(),
       itemCfg = _self.get('itemCfg'),
-      cfg = Util.mix({x : x,y : y},item,itemCfg);
+      cfg = Util.mix({x : x,y : y,formatter: _self.get('formatter')},item,itemCfg);
 
     cfg.legend = _self;
     var newItem = itemsGroup.addGroup(Item,cfg);
@@ -429,7 +429,7 @@ Util.augment(Legend,{
       cfg,
       shape;
 
-    if(border){      
+    if(border){
       width = _self._getTotalWidth();
       height = _self._getTotalHeight();
 
@@ -486,7 +486,7 @@ Util.augment(Legend,{
       case 'bottom':
         x = (top.x + end.x) /2 - width/2;
         y = end.y;
-      default : 
+      default :
         break;
     }
    _self.move(x+dx,y+dy);

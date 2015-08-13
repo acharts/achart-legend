@@ -17,12 +17,12 @@ var canvas = new Canvas({
   height : 500
 });
 
-var 
+var
   types = ['circle','line','rect','circle','line','circle','line','rect','circle','line'],
   symbols = ['circle','diamond','square','triangle','triangle-down','circle','diamond','square','triangle','triangle-down'],
   colors = [ '#ff6600','#b01111','#ac5724','#572d8a','#333333','#7bab12','#c25e5e','#a6c96a','#133960','#2586e7'];
 
- 
+
   var range = new PlotRange({y : 450,x : 50},{x : 450,y : 50});
 
 describe('legend',function(){
@@ -55,7 +55,7 @@ describe('legend',function(){
   var itemsGroup = legend.get('itemsGroup');
   it('create', function() {
     expect(itemsGroup).not.to.be(undefined);
-    
+
     expect(getTotalCount()).to.be(items.length);
   });
 
@@ -159,7 +159,7 @@ describe('legend',function(){
     expect(callback2.called).to.be(true);
 
     Simulate.simulate(item.get('node'),'click');
-    
+
     expect(callback1.called).to.be(true);
     legend.off('itemclick',callback);
     legend.off('itemchecked',callback1);
@@ -382,7 +382,6 @@ describe('use legend', function() {
   it('out',function(){
     var itemsGroup = legend.get('itemsGroup');
     var first = itemsGroup.getFirst();
-    console.log(itemsGroup);
     Simulate.simulate(first.get('node'),'mouseout');
 
     expect(group.getFirst().get('actived')).to.be(false);
@@ -443,7 +442,7 @@ describe('legend title',function(){
   it('totalHeight',function(){
     expect(legend._getTotalHeight() > 25).to.be(true);
   });
- 
+
 });
 
 function random(min,max){
@@ -492,5 +491,5 @@ describe('legend vertical title',function(){
   it('totalWidth',function(){
     expect(legend._getTotalWidth() > 55).to.be(true);
   });
- 
+
 });

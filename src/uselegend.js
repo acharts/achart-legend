@@ -6,7 +6,7 @@ var Util = require('achart-util'),
 /**
  * @class Chart.Legend.UseLegend
  * 使用图例的扩展
- * 
+ *
  * - <a href="http://spmjs.io/docs/achart-legend/#legend-uselegend" target="_blank">文档</a>
  * - <a href="http://spmjs.io/docs/achart-legend/wiki/use.html" target="_blank">wiki</a>
  * @private
@@ -44,7 +44,7 @@ UseLegend.prototype = {
         legend.plotRange = _self.get('plotRange') || _self.get('parent').get('plotRange');
       }
        legend.items = legend.items || _self.getLengendItems();
-      var 
+      var
         legendGroup = canvas.addGroup(Legend,legend);
       _self.set('legendGroup',legendGroup);
       _self._bindLegendEvent();
