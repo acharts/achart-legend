@@ -217,11 +217,19 @@ Util.augment(Legend,{
    * 根据DOM 获取图例子项
    */
   getItemByNode : function(node){
-    var _self = this,
-      itemsGroup = _self.get('itemsGroup'),
-      items = itemsGroup.get('children'),
-      rst = null;
-
+    var _self = this;
+    var itemsGroup = _self.get('itemsGroup');
+    var itemsGroups = _self.get('itemsGroups');
+    var items = [];//
+    var rst = null;
+    if(itemsGroups && itemsGroups.length > 0){
+      for(var i = 0; i < itemsGroups.length; i ++){
+        var ig  = itemsGroups[i];
+        items = items.concat(ig.get('children'));
+      }
+    }else{
+      items = itemsGroup.get('children');
+    }
     Util.each(items,function(item){
       if(item.containsElement(node)){
         rst = item;
@@ -354,7 +362,6 @@ Util.augment(Legend,{
       }
     }else{
       var titleHeight = _self._getTitleHeight();
-      //console.log(bBox.height,spacingY,titleHeight,maxHeight,itemsGroup.get('node'),itemsGroup.getBBox())
       //溢出了
       if(bBox.height + spacingY + titleHeight> maxHeight ){
         newItem.remove();
