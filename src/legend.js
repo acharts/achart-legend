@@ -218,9 +218,8 @@ Util.augment(Legend,{
    */
   getItemByNode : function(node){
     var _self = this;
-    var itemsGroup = _self.get('itemsGroup');
     var itemsGroups = _self.get('itemsGroups');
-    var items = [];//
+    var items = [];
     var rst = null;
     if(itemsGroups && itemsGroups.length > 0){
       for(var i = 0; i < itemsGroups.length; i ++){
@@ -241,10 +240,18 @@ Util.augment(Legend,{
   },
 
   _getLeaveCount : function(){
-    var _self = this,
-      itemsGroup = _self.get('itemsGroup'),
-      items = itemsGroup.get('children'),
-      tmpArr = [];
+    var _self = this;
+    var itemsGroups = _self.get('itemsGroups');
+    var items = [];
+    var tmpArr = [];
+    if(itemsGroups && itemsGroups.length > 0){
+      for(var i = 0; i < itemsGroups.length; i ++){
+        var ig  = itemsGroups[i];
+        items = items.concat(ig.get('children'));
+      }
+    }else{
+      items = itemsGroup.get('children');
+    }
 
     tmpArr = Util.filter(items,function(item){
       return item.get('checked');
